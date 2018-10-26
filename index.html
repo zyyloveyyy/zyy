@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+<style>
+    html,body{background: white;overflow: hidden}
+    canvas{background: black;}
+</style>
+
+</head>
+<body>
+    <canvas width="800" height="600"></canvas>
+</body>
+<script>
+var oC=document.querySelector("canvas");
+var pen=oC.getContext("2d");
+var oWidth=document.documentElement.clientWidth;
+var oHeight=document.documentElement.clientHeight;
+oC.width=oWidth;
+oC.height=oHeight;
+
+
+//随机获得qi个点
+var arr=[];
+var bigArr=[];
+for(var i=0;i<random(3,20);i++){
+    arr.push({       
+        x:random(0,oC.width),
+        y:random(0,oC.height),
+        speedX:random(-10,10),
+        speedY:random(-10,10)
+    })
+}
+pen.strokeStyle=randomColor();
+setInterval(function(){
+    pen.clearRect(0,0,oC.width,oC.height)
+for(var i=0;i<arr.length;i++){
+    arr[i].x+=arr[i].speedX;
+    arr[i].y+=arr[i].speedY;
+    if(arr[i].x<=0){
+        arr[i].x=0;
+        arr[i].speedX*=-1
+    }
+    if(arr[i].x>=oC.width){
+        arr[i].x=oC.width;
+        arr[i].speedX*=-1
+    }
+    if(arr[i].y<=0){
+        arr[i].y=0;
+        arr[i].speedY*=-1
+    }
+    if(arr[i].y>=oC.height){
+        arr[i].y=oC.height
+        arr[i].speedY*=-1
+    }
+    drawPoint(arr[i])
+}
+
+// 连线
+// pen.strokeStyle="white";
+
+pen.beginPath();
+pen.moveTo(arr[0].x,arr[0].y);
+for(var i=0;i<arr.length;i++){
+    pen.lineTo(arr[i].x,arr[i].y);
+}
+pen.closePath();
+pen.stroke();
+//收集尾巴，记录五个点的位置
+var arr1=[];
+for(var i=0;i<arr.length;i++){
+    arr1.push({
+        x:arr[i].x,
+        y:arr[i].y
+    })
+}
+
+var len=random(0,50);
+bigArr.push(arr1)
+
+if(bigArr.length>len){
+    bigArr.shift();
+}
+
+// 绘制尾巴
+
+for(var i=0;i<bigArr.length;i++){
+   
+    var opacity=i/bigArr.length;
+    pen.opacity=i/bigArr.length;
+    // pen.beginPath();pen.strokeStyle=randomColor()
+    pen.moveTo(bigArr[i][0].x,bigArr[i][0].y);
+ 
+    for(var j=0;j<bigArr[i].length;j++){
+        pen.lineTo(bigArr[i][j].x,bigArr[i][j].y)
+    }
+    pen.closePath();
+    pen.stroke();
+}
+},16)
+
+function random(n,m){
+    return Math.round(Math.random()*(m-n)+n);
+}
+
+function drawPoint(p){
+    pen.fillStyle="white";
+    pen.fillRect(p.x-5/2,p.y-5/2,5,5)
+}
+
+function randomColor(alpha){
+    var col="rgba(";
+        for(var i=0;i<3;i++){
+            col+=Math.floor(Math.random()*256)+",";
+        }
+        if(alpha){
+            col+=Math.random();
+        }else{
+            col+=1
+        }
+        col+=")";
+        return col; 
+}
+
+</script>
+</html>
